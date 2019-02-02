@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script src="./danmaku.min.js"></script>
+    <script src="./bilibili.js"></script>
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <!-- All of the Node.js APIs are available in this renderer process. -->
+    We are using Node.js <script>document.write(process.versions.node)</script>,
+    Chromium <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+
+	<video id="my-video" src="./example.mp4" controls style="display:none"></video>
+	<audio id="my-audio" src="./example.mp3" controls></audio>
+	<div id="my-container" style="width:640px;height:360px;"></div>
+	
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer.js');
+      window.$ = window.jQuery = require('./jquery-3.2.1.min.js');
+      
+      var danmaku = new Danmaku();
+      var comments = [];
+      var video = document.getElementById('my-video');
+      var audio = document.getElementById('my-audio');
+      var container = document.getElementById('my-container');
+      
+      jQuery.ajax({  
+		    url: './bilibili.xml',
+		    type: 'GET',
+		    dataType: 'xml',
+		    success: function(xml) {
+		        comments = BilibiliParser(xml);
+		    }
+		});
+      
+//	  video.onloadedmetadata = function() {
+//	  	  console.log("video loaded!");
+//		  danmaku.init({
+//		    video: video,
+//		    comments: comments
+//		  });
+//	  };
+	  
+	  audio.onloadedmetadata = function() {
+	  	  console.log("audio loaded!");
+		  danmaku.init({
+		    audio: audio,
+		    comments: comments,
+		    container: container,
+		    engine: 'canvas'
+		  });
+	  };
+	  
+    </script>
+  </body>
+</html>
